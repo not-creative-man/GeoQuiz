@@ -61,22 +61,32 @@ class MainActivity : AppCompatActivity() {
             mCurrentIndex = if(mCurrentIndex == 0) 6 else (mCurrentIndex - 1)
             updateQuestion()
         }
-
-
     }
 
      private fun updateQuestion(){
-        val question = mQuestionBank[mCurrentIndex].mTextResId
-        (mQuestionTextView as TextView?)?.setText(question)
+         val question = mQuestionBank[mCurrentIndex].mTextResId
+         (mQuestionTextView as TextView?)?.setText(question)
+         changeClickable(mTrueButton, false)
+         changeClickable(mFalseButton, false)
     }
 
     private fun checkAnswers(userPressedTrue: Boolean){
+        changeClickable(mTrueButton, true)
+        changeClickable(mFalseButton, true)
         if(userPressedTrue == mQuestionBank[mCurrentIndex].mAnswerTrue){
             Toast.makeText(this@MainActivity, R.string.correct_toast, Toast.LENGTH_SHORT).show()
         }
         else{
             Toast.makeText(this@MainActivity, R.string.incorrect_toast, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun changeClickable(button: Button, isChecking: Boolean){
+        button.isClickable = !isChecking
+        if(button.isClickable) button.setBackgroundColor(getColor(R.color.purple_500))
+        else button.setBackgroundColor(getColor(R.color.grey))
+        Log.d("TAG", button.background.toString())
+        Log.d("TAG", button.isClickable.toString())
     }
 
     override fun onStart() {
