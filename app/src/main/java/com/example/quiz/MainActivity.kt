@@ -14,6 +14,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mNextButton: ImageButton
     private lateinit var mPrevButton: ImageButton
     private lateinit var mQuestionTextView: View
+    private val TAG = "QuizActivity"
+    private val KEY_INDEX = "index"
 
     private val mQuestionBank = arrayOf<Question>(
         Question(R.string.question_australia, true),
@@ -30,6 +32,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if(savedInstanceState != null) mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0)
+
+        Log.d(TAG, "onCreate()")
+
         mQuestionTextView = findViewById<TextView>(R.id.question_text_view)
         mTrueButton = findViewById(R.id.true_button)
         mFalseButton = findViewById(R.id.false_button)
@@ -45,26 +51,21 @@ class MainActivity : AppCompatActivity() {
             checkAnswers(false)
         }
         mNextButton.setOnClickListener{
+            mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.size
             updateQuestion()
         }
         mQuestionTextView.setOnClickListener{
             updateQuestion()
         }
         mPrevButton.setOnClickListener{
-            previousQuestion()
+            mCurrentIndex = if(mCurrentIndex == 0) 6 else (mCurrentIndex - 1)
+            updateQuestion()
         }
 
 
     }
 
      private fun updateQuestion(){
-        mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.size
-        val question = mQuestionBank[mCurrentIndex].mTextResId
-        (mQuestionTextView as TextView?)?.setText(question)
-    }
-
-    private fun previousQuestion(){
-        mCurrentIndex = if(mCurrentIndex == 0) 6 else (mCurrentIndex - 1)
         val question = mQuestionBank[mCurrentIndex].mTextResId
         (mQuestionTextView as TextView?)?.setText(question)
     }
@@ -76,6 +77,37 @@ class MainActivity : AppCompatActivity() {
         else{
             Toast.makeText(this@MainActivity, R.string.incorrect_toast, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume()")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause()")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(KEY_INDEX, mCurrentIndex.toString())
+        outState.putInt(KEY_INDEX, mCurrentIndex)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop()")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy()")
     }
 }
 
