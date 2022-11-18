@@ -1,12 +1,18 @@
 package com.example.quiz
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewAnimationUtils
 import android.widget.Button
 import android.widget.TextView
+import android.widget.ViewAnimator
 
 class CheatActivity : AppCompatActivity() {
 
@@ -15,6 +21,7 @@ class CheatActivity : AppCompatActivity() {
     private lateinit var mAnswerTextView: TextView
     private lateinit var mShowAnswerButton: Button
     private var EXTRA_ANSWER_SHOWN = "qwerty"
+    private lateinit var apiVersion: TextView
 
     companion object{
         fun newIntent(packageContext: Context, answerIsTrue: Boolean): Intent{
@@ -35,13 +42,30 @@ class CheatActivity : AppCompatActivity() {
 
         mAnswerTextView = findViewById(R.id.answer_text_view)
         mShowAnswerButton = findViewById(R.id.show_answer_button)
+        apiVersion = findViewById(R.id.api_version_for_cheat)
         mShowAnswerButton.setOnClickListener{
             if (mAnswerIsTrue)
                 mAnswerTextView.setText(R.string.true_button)
             else
                 mAnswerTextView.setText(R.string.false_button)
             setAnswerShownResult(true)
+
+            val cx = mShowAnswerButton.width / 2
+            val cy = mShowAnswerButton.height / 2
+
+            val radius = mShowAnswerButton.width
+            var anim = ViewAnimationUtils.createCircularReveal(mShowAnswerButton, cx, cy,
+                radius.toFloat(), 0F)
+            anim.addListener(object: AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    super.onAnimationEnd(animation)
+                    mShowAnswerButton.visibility = View.INVISIBLE
+                }
+            })
+            anim.start()
         }
+
+        apiVersion.text = "${apiVersion.text} ${Build.VERSION.SDK_INT}"
     }
 
     private fun setAnswerShownResult(isAnswerShown: Boolean){
